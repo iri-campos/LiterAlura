@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "autores")
 public class Autor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String nome;
 
     private Integer anoNascimento;
@@ -74,7 +75,6 @@ public class Autor {
     public String toString() {
         return "Nome: '" + nome + '\'' +
                 ", Ano de Nascimento: " + anoNascimento +
-                ", Ano de Falecimento: " + anoFalecimento +
-                ", Livros: " + livro;
+                ", Ano de Falecimento: " + anoFalecimento;
     }
 }

@@ -10,7 +10,10 @@ import br.com.alura.literalura.repository.LivroRepository;
 import br.com.alura.literalura.service.ConsumoAPI;
 import br.com.alura.literalura.service.ConverteDados;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -37,7 +40,7 @@ public class Principal {
     private String menu = """
             *** LiterAlura ***
             
-            1 - Buscar livro pelo título
+            1 - Buscar livro pelo título para registro
             2 - Listar livros registrados
             3 - Listar autores registrados
             4 - Listar autores vivos em um determinado ano
@@ -71,6 +74,7 @@ public class Principal {
                     break;
                 case 0:
                     System.out.println("\nEncerrando...");
+                    break;
                 default:
                     System.out.println("\nOpção inválida.");
 
@@ -92,13 +96,20 @@ public class Principal {
                 livro = new Livro(dadosLivro, autor);
                 autorRepositorio.save(autor);
             }
-            livroRepositorio.save(livro);
-            System.out.println(livro);
+            try {
+                livroRepositorio.save(livro);
+                System.out.println(livro);
+            } catch (Exception e) {
+                System.out.println("\nLivro já consta no banco de dados.");
+            }
+
+        } else {
+            System.out.println("\nLivro não encontrado.");
         }
     }
 
     private DadosLivro obterDadosLivro() {
-        System.out.println("Informe o título do livro para busca: ");
+        System.out.println("\nInforme o título do livro para busca: ");
         var nome = leitura.nextLine();
         json = consumoAPI.obterDados(URL_BASE + "?search=" + nome.replace(" ", "+"));
         Dados dadosBusca = conversor.obterDados(json, Dados.class);
@@ -114,9 +125,25 @@ public class Principal {
     }
 
     private void listarLivros() {
+        List<Livro> livros = livroRepositorio.findAll(Sort.by(Sort.Direction.ASC, "titulo"));
+
+        if(livros.isEmpty()) {
+            System.out.println("\nNenhum livro cadastrado");
+        } else {
+            System.out.println("\n--- Livros Cadastrados ---");
+            livros.forEach(System.out::println);
+        }
     }
 
     private void listarAutores() {
+        List<Autor> autores = autorRepositorio.findAll(Sort.by(Sort.Direction.ASC, "nome"));
+
+        if(autores.isEmpty()) {
+            System.out.println("\nNenhum autor cadastrado");
+        } else {
+            System.out.println("\n--- Autores Cadastrados ---");
+            autores.forEach(System.out::println);
+        }
     }
 
     private void listarAutoresVivosDeterminadoAno() {
