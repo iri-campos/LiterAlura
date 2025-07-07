@@ -142,13 +142,60 @@ public class Principal {
             System.out.println("\nNenhum autor cadastrado");
         } else {
             System.out.println("\n--- Autores Cadastrados ---");
-            autores.forEach(System.out::println);
+            for (Autor autor : autores) {
+                System.out.println("\nAutor: " + autor.getNome() +
+                        ", Ano Nascimento: " + autor.getAnoNascimento() +
+                        ", Ano Falecimento: " + (autor.getAnoFalecimento() != null ? autor.getAnoFalecimento() : "vivo"));
+
+                List<Livro> livros = autor.getLivro();
+                if(livros == null || livros.isEmpty()) {
+                    System.out.println("\nNenhum livro cadastrado.");
+                } else {
+                    System.out.println("Livros: ");
+                    livros.forEach(l -> System.out.println(" - " + l.getTitulo()));
+                }
+            }
         }
     }
 
     private void listarAutoresVivosDeterminadoAno() {
+        System.out.println("\nInforme o ano desejado: ");
+        var ano = leitura.nextInt();
+        leitura.nextLine();
+
+        List<Autor> autores = autorRepositorio.autoresVivosNoAno(ano);
+
+        if(autores.isEmpty()) {
+            System.out.println("\nNenhum autor vivo no ano " + ano);
+        } else {
+            System.out.println("\n--- Autores vivos em " + ano + " ---");
+            for (Autor autor : autores) {
+                System.out.println("\nAutor: " + autor.getNome() +
+                        ", Ano Nascimento: " + autor.getAnoNascimento() +
+                        ", Ano Falecimento: " + (autor.getAnoFalecimento() != null ? autor.getAnoFalecimento() : "vivo"));
+
+                List<Livro> livros = autor.getLivro();
+                if(livros == null || livros.isEmpty()) {
+                    System.out.println("\nNenhum livro cadastrado.");
+                } else {
+                    System.out.println("Livros: ");
+                    livros.forEach(l -> System.out.println(" - " + l.getTitulo()));
+                }
+            }
+        }
     }
 
     private void listarLivrosPorIdioma() {
+        System.out.println("Informe o idioma para busca (Ex.: pt, en, fr):");
+        var idioma = leitura.nextLine();
+
+        List<Livro> livros = livroRepositorio.findByIdioma(idioma);
+
+        if(livros.isEmpty()) {
+            System.out.println("\nNenhum livro encontrado para o idioma: " + idioma);
+        } else {
+            System.out.println("\n--- Livros no idioma \"" + idioma + "\" ---");
+            livros.forEach(System.out::println);
+        }
     }
 }
